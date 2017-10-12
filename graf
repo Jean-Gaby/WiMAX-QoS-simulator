@@ -1,0 +1,28 @@
+import numpy
+import matplotlib.pyplot as plt
+
+
+fig = plt.figure()
+ax1 = fig.add_subplot(1,1,1)
+
+
+
+#
+property1 = numpy.array(range(100))
+property2 = numpy.array(range(100))
+property3 = numpy.array(range(100))
+property4 = numpy.array(range(100))
+
+N = len(property1)
+
+ind = numpy.arange(N)
+width = 1
+
+p1 = ax1.bar(ind, property1, width, color='#CECECE')
+p2 = ax1.bar(ind, property2, width, color='#FFD700', bottom=property1)
+p3 = ax1.bar(ind, property3, width, color='#AFAFAF', bottom=property1 + property2)
+p4 = ax1.bar(ind, property4, width, color='#8A6542', bottom=property1 + property2 + property3 )
+plt.xticks(np.arange(0, 100, 10))
+plt.legend((p4[0], p3[0],p2[0],p1[0]), ('Best Effort','nrtPS','rtPS','UGS'))
+plt.show()
+plt.close()
