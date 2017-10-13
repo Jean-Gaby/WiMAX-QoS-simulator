@@ -1,28 +1,126 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Oct 13 00:01:32 2017
+
+@author: Jean-Gabriel Jolly
+"""
+
+import random as rand
 import numpy
 import matplotlib.pyplot as plt
 
+BestEffort=0.25;
+nrtPS=0.25;
+rtPS=0.25;
+UGS=0.25;
+numberBits=100;
 
-fig = plt.figure()
-ax1 = fig.add_subplot(1,1,1)
 
 
 
+# simulator of debit for the 4 class of WimAX
+def simulatorDebit(BestEffort, nrtPS, rtPS, UGS, numberBits):
+    debit=BestEffort+nrtPS+rtPS+UGS;
+
+    rateBestEffort=BestEffort/debit;
+    ratenrtPS=(nrtPS/debit)+rateBestEffort;
+    ratertPS=(rtPS/debit)+ratenrtPS;
+
+    liste = []
+    for i in range(numberBits):
+        classType=rand.random()
+        #print(classType);
+        if classType < rateBestEffort:
+            liste.append(0);
+        elif classType < ratenrtPS:
+            liste.append(1); 
+        elif classType < ratertPS:
+            liste.append(2);
+        else:
+            liste.append(3);
+    return liste;
+
+# graf generator for WiMAX
+def graf(property4,property3,property2,property1):
+    
+    property1 = numpy.array(property1)
+    property2 = numpy.array(property2)
+    property3 = numpy.array(property3)
+    property4 = numpy.array(property4)
+
+    fig = plt.figure()
+    ax1 = fig.add_subplot(1,1,1)
+
+
+    N = len(property1)
+
+    ind = numpy.arange(N)
+    width = 1
+
+    p1 = ax1.bar(ind, property1, width, color='#CECECE')
+    p2 = ax1.bar(ind, property2, width, color='#FFD700', bottom=property1)
+    p3 = ax1.bar(ind, property3, width, color='#AFAFAF', bottom=property1 + property2)
+    p4 = ax1.bar(ind, property4, width, color='#8A6542', bottom=property1 + property2 + property3 )
+    plt.xticks(numpy.arange(0, 100, 10))
+    plt.legend((p4[0], p3[0],p2[0],p1[0]), ('Best Effort','nrtPS','rtPS','UGS'))
+    plt.show()
+    plt.close()
+    return;
+
+def fifo(BestEffort, nrtPS, rtPS, UGS, debitPerSecond,outputDebitPerSecond,simulationSize):
+    bitNumber=BestEffort+nrtPS+rtPS+UGS;
+    remainingBits=simulationSize;
+    rateBestEffort=[]
+    ratenrtPS=[]
+    ratertPS=[]
+    rateUGS=[]
+    
+    while(remainingBits>=0):
+        liste=simulatorDebit(BestEffort, nrtPS, rtPS, UGS, debitPerSecond+random.randint(-10, 10))
+        remainingBits-=debitPerSecond
+        if(len(liste)>outputDebitPerSecond):
+            liste=liste[:100]
+        else:
+            for i in range(outputDebitPerSecond):
+                liste.append(4)
+        rateBestEffort.append(liste.count(0))
+        ratenrtPS.append(liste.count(1))
+        ratertPS.append(liste.count(2))
+        rateUGS.append(liste.count(3))
+
+    #frame=simulatorDebit(BestEffort, nrtPS, rtPS, UGS, numberBits)
+    graf(rateBestEffort,ratenrtPS,ratertPS,rateUGS)
+    return;
+
+    
+
+###################################################
+###################################################
+###################################################
+  
+
+
+print(liste.count(0))
+print(liste.count(1))
+print(liste.count(2))
+print(liste.count(3))
+
+
+
+
+
+#                             minimum/ upload vitesse  recommandée téléchargement/ upload vitesse
+#L’appel                    	30 kbit/s/30 kbit/s 	   100 Kbit/s/100 Kbit/s
+#Visiophonie /Partage d’écran 	128kbps/128kbps 	      300 kb/s/300 kbit/s
+#Visiophonie(haute qualité) 	400Kbits/s/400 Kbits/s 	500 Kbits/s/500 kbit/s
+#Visiophonie(HD)              	1.2Mbps/1.2Mbps 	      1,5 Mbps/1,5 Mbps
+# 
 #
-property1 = numpy.array(range(100))
-property2 = numpy.array(range(100))
-property3 = numpy.array(range(100))
-property4 = numpy.array(range(100))
-
-N = len(property1)
-
-ind = numpy.arange(N)
-width = 1
-
-p1 = ax1.bar(ind, property1, width, color='#CECECE')
-p2 = ax1.bar(ind, property2, width, color='#FFD700', bottom=property1)
-p3 = ax1.bar(ind, property3, width, color='#AFAFAF', bottom=property1 + property2)
-p4 = ax1.bar(ind, property4, width, color='#8A6542', bottom=property1 + property2 + property3 )
-plt.xticks(np.arange(0, 100, 10))
-plt.legend((p4[0], p3[0],p2[0],p1[0]), ('Best Effort','nrtPS','rtPS','UGS'))
-plt.show()
-plt.close()
+#Vous trouverez ci-dessous les vitesses de téléchargement recommandées par
+#flux pour regarder des séries TV et des films en streaming depuis Netflix.
+#
+#    0,5 mégabit par seconde : vitesse de connexion requise
+#    1,5 mégabits par seconde : vitesse de connexion recommandée
+#    3 mégabits par seconde : recommandation pour une qualité SD
+#    5 mégabits par seconde : recommandation pour une qualité HD
+#    25 mégabits par seconde : recommandation pour une qualité Ultra HD
